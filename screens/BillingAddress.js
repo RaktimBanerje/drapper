@@ -6,37 +6,23 @@ import {
     useFonts,
     Poppins_500Medium,
 } from '@expo-google-fonts/poppins';
-import { FlatList } from 'react-native';
-import { TouchableOpacity } from 'react-native';
-import { AntDesign } from '@expo/vector-icons';
-import { View } from 'react-native';
-import { Image } from 'react-native';
-
-import { Entypo } from '@expo/vector-icons';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import axios from '../utils'
 
 
 const Bill = ({navigation}) => {
     const [refreshing, setRefreshing] = React.useState(false)
     const [loading, setLoading] = React.useState(false)
     const [isSubmitting, setIsSubmitting] = React.useState(false)
+   
+    const [name, setName] = React.useState("")
+    const [phone, setPhone] = React.useState("")
+    const [address, setAddress] = React.useState("")
+    const [zip, setZip] = React.useState("")
 
     let [fontsLoaded] = useFonts({
         Poppins_500Medium,
     });
 
-    const product = {
-        id: "1",
-        name: "Hair Gel",
-        price: "90",
-        star: "4.8",
-        thumbnail: require("../assets/thumbnail.png"),
-        images: [
-            require("../assets/product1.png"),
-            require("../assets/product1.png"),
-            require("../assets/product1.png")
-        ]
-    }
 
     const loadData = () => {
         setLoading(true)
@@ -50,9 +36,41 @@ const Bill = ({navigation}) => {
         }, 2000)
     }
         
-        React.useEffect(() => {
-            loadData()
-        }, [])
+    React.useEffect(() => {
+        loadData()
+    }, [])
+
+    const placeOrder = () => {
+
+        if(name == "") {
+            alert("Enter your name")
+            return;
+        }
+        if(phone == "") {
+            alert("Enter your Phone")
+            return;
+        }
+        if(address == "") {
+            alert("Enter your Address")
+            return;
+        }
+        if(zip == "") {
+            alert("Enter your ZIP Code")
+            return;
+        }
+       
+
+        setIsSubmitting(true)
+        axios.post("/order", {name, phone, address, zip})
+        .then(response =>  {
+            if(response.status == 200){
+                setIsSubmitting(false)
+                navigation.navigate("ProductBuySuccess")
+            }
+        })
+        .catch(console.log)
+        .finally(() => setLoading(false))
+    }
 
     return (
         <SafeAreaView style={styles.container}>
@@ -68,38 +86,38 @@ const Bill = ({navigation}) => {
                 <TextInput
                     style={styles.input}
                     cursorColor="black"
-                    value={() => {}}
+                    value={name}
                     placeholder="Full name"
-                    onPressIn={() => {}}
+                    onChangeText={text => setName(text)}
                     autoCorrect={false}
                 />
                 <TextInput
                     style={styles.input}
                     cursorColor="black"
-                    value={() => {}}
+                    value={phone}
                     placeholder="Contact number"
-                    onPressIn={() => {}}
+                    onChangeText={text => setPhone(text)}
                     autoCorrect={false}
                 />
                 <TextInput
                     style={styles.input}
                     cursorColor="black"
-                    value={() => {}}
+                    value={address}
                     placeholder="Full address"
-                    onPressIn={() => {}}
+                    onChangeText={text => setAddress(text)}
                     autoCorrect={false}
                 />
                 <TextInput
                     style={styles.input}
                     cursorColor="black"
-                    value={() => {}}
+                    value={zip}
                     placeholder="ZIP Code"
-                    onPressIn={() => {}}
+                    onChangeText={text => setZip(text)}
                     autoCorrect={false}
                 />
             </ScrollView>   
 
-            <Button buttonStyle={styles.primaryButtonStyle} loading={isSubmitting} disabled={isSubmitting} onPress={() => {}}>Continue to Payment</Button>
+            <Button buttonStyle={styles.primaryButtonStyle} loading={isSubmitting} disabled={isSubmitting} onPress={() => {placeOrder()}}>Continue to Payment</Button>
         </SafeAreaView>
   )
 }

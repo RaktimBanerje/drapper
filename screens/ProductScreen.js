@@ -6,37 +6,35 @@ import {
     useFonts,
     Poppins_500Medium,
 } from '@expo-google-fonts/poppins';
-import { FlatList } from 'react-native';
-import { TouchableOpacity } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import { View } from 'react-native';
 import { Image } from 'react-native';
+import axios from '../utils'
 
 
-const Product = ({navigation}) => {
+const Product = ({route, navigation}) => {
     const [refreshing, setRefreshing] = React.useState(false)
     const [loading, setLoading] = React.useState(false)
     const [isSubmitting, setIsSubmitting] = React.useState(false)
+    const [product, setProduct] = React.useState(false)
+
+    const {product_id} = route.params
 
     let [fontsLoaded] = useFonts({
         Poppins_500Medium,
     });
 
-    const product = {
-        id: "1",
-        name: "Hair Gel",
-        price: "90",
-        star: "4.8",
-        thumbnail: require("../assets/thumbnail.png"),
-        images: [
-            require("../assets/product1.png"),
-            require("../assets/product1.png"),
-            require("../assets/product1.png")
-        ]
-    }
-
     const loadData = () => {
         setLoading(true)
+        axios.get(`/product/${product_id}`)
+        .then(response =>  {
+            if(response.status == 200){
+                console.log(response.data.product)
+                setProduct(response.data.product)
+            }
+        })
+        .catch(console.log)
+        .finally(() => setLoading(false))
     }
 
     const onRefresh = () => {
@@ -47,9 +45,21 @@ const Product = ({navigation}) => {
         }, 2000)
     }
         
-        React.useEffect(() => {
-            loadData()
-        }, [])
+    React.useEffect(() => {
+        loadData()
+    }, [])
+
+    const addToCart = () => {
+        axios.post(`/cart`, {product_id: product.id})
+        .then(response =>  {
+            if(response.status == 200){
+                alert(`${product.name} added to the cart`)
+                navigation.navigate("Cart")
+            }
+        })
+        .catch((error)=> alert("Something went wrong !!!"))
+        .finally(() => setLoading(false))
+    }
 
     return (
         <SafeAreaView style={styles.container}>
@@ -63,11 +73,11 @@ const Product = ({navigation}) => {
             >
                 <Image 
                     style={{
-                        width: "100%",
+                        height: 200,
                         borderRadius: 8
                     }}
                     resizeMode='cover'
-                    source={product.thumbnail}
+                    source={{uri: 'https://digitalplutform.com/trimme/public/images/' + product.thumbnail}}
                 />
 
                 <View style={{flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 10}}>
@@ -78,7 +88,7 @@ const Product = ({navigation}) => {
                             borderRadius: 8
                         }}
                         resizeMode='cover'
-                        source={require("../assets/product1.png")}
+                        source={{uri: 'https://digitalplutform.com/trimme/public/images/' + product.thumbnail}}
                     />
 
                     <Image 
@@ -88,7 +98,7 @@ const Product = ({navigation}) => {
                             borderRadius: 8
                         }}
                         resizeMode='cover'
-                        source={require("../assets/product2.png")}
+                        source={{uri: 'https://digitalplutform.com/trimme/public/images/' + product.image_1}}
                     />
 
 
@@ -99,7 +109,7 @@ const Product = ({navigation}) => {
                             borderRadius: 8
                         }}
                         resizeMode='cover'
-                        source={require("../assets/product4.png")}
+                        source={{uri: 'https://digitalplutform.com/trimme/public/images/' + product.image_2}}
                     />
                 </View>
 
@@ -108,23 +118,23 @@ const Product = ({navigation}) => {
                         <Text style={{fontSize: 22, fontFamily: "Poppins_500Medium"}}>{product.name}</Text>
                         <View style={{flexDirection: "row"}}>
                             <AntDesign name="star" size={15} color="#F9B53F" style={{marginTop: 3, marginRight: 4}} /> 
-                            <Text style={{fontSize: 18, fontFamily: "Poppins_500Medium"}}>{product.star}</Text>
+                            <Text style={{fontSize: 18, fontFamily: "Poppins_500Medium"}}>4.8</Text>
                         </View>
                     </View>
                     
-                    <Text style={{fontSize: 22, fontFamily: "Poppins_500Medium"}}>$ {product.price}</Text>
+                    <Text style={{fontSize: 22, fontFamily: "Poppins_500Medium"}}>${product.selling_price}</Text>
                 </View>
 
-                <Button buttonStyle={styles.primaryButtonStyle} loading={isSubmitting} disabled={isSubmitting} onPress={() => navigation.navigate("Cart")}>Add to cart</Button>
+                <Button buttonStyle={styles.primaryButtonStyle} loading={isSubmitting} disabled={isSubmitting} onPress={() => addToCart()}>Add to cart</Button>
                 <Button buttonStyle={styles.secondaryButtonStyle} loading={isSubmitting} disabled={isSubmitting} onPress={() => send()}>Buy now</Button>
 
                 
                 <View style={{marginBottom: 15}}>
                     <Text style={{fontSize: 25, fontFamily: "Poppins_500Medium"}}>About product</Text>
-                    <Text style={{fontSize: 15, fontFamily: "Poppins_500Medium", color: "#575757"}}>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum</Text>
+                    <Text style={{fontSize: 15, fontFamily: "Poppins_500Medium", color: "#575757"}}>{product.short_description}</Text>
 
                     <Text style={{fontSize: 25, fontFamily: "Poppins_500Medium"}}>Product descriptions</Text>
-                    <Text style={{fontSize: 15, fontFamily: "Poppins_500Medium", color: "#575757"}}>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum</Text>
+                    <Text style={{fontSize: 15, fontFamily: "Poppins_500Medium", color: "#575757"}}>{product.long_description}</Text>
                 </View>
 
             </ScrollView>   

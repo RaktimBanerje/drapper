@@ -1,116 +1,59 @@
 import { Button, Text } from '@rneui/base'
 import React from 'react'
-import { StyleSheet, RefreshControl, ScrollView, TextInput } from 'react-native'
+import { Image, StyleSheet, View } from 'react-native'
 import SafeAreaView from 'react-native-safe-area-view'
 import {
     useFonts,
     Poppins_500Medium,
-} from '@expo-google-fonts/poppins';
-import { FlatList } from 'react-native';
-import { TouchableOpacity } from 'react-native';
-import { AntDesign } from '@expo/vector-icons';
-import { View } from 'react-native';
-import { Image } from 'react-native';
-
-import { Entypo } from '@expo/vector-icons';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-
+  } from '@expo-google-fonts/poppins';
 
 const ProductBuySuccess = ({navigation}) => {
-    const [refreshing, setRefreshing] = React.useState(false)
-    const [loading, setLoading] = React.useState(false)
-    const [isSubmitting, setIsSubmitting] = React.useState(false)
-
     let [fontsLoaded] = useFonts({
         Poppins_500Medium,
     });
 
-    const product = {
-        id: "1",
-        name: "Hair Gel",
-        price: "90",
-        star: "4.8",
-        thumbnail: require("../assets/thumbnail.png"),
-        images: [
-            require("../assets/product1.png"),
-            require("../assets/product1.png"),
-            require("../assets/product1.png")
-        ]
-    }
-
-    const loadData = () => {
-        setLoading(true)
-    }
-
-    const onRefresh = () => {
-        setRefreshing(true)
-        loadData()
-        setTimeout(() => {
-            setRefreshing(false)
-        }, 2000)
-    }
-        
-        React.useEffect(() => {
-            loadData()
-        }, [])
-
     return (
-        <SafeAreaView style={styles.container}>
-            <ScrollView
-                style={styles.container}
-                showsHorizontalScrollIndicator={false}
-                showsVerticalScrollIndicator={false}
-                refreshControl={
-                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-                }
-            >
-                <View style={{flexDirection: "row", justifyContent: "center", alignItems: "center"}}>
-                    <View>
-                        <Text style={{fontFamily: "Poppins_500Medium", fontSize: 24, color: "#AE8447"}}>Thank you for your order</Text>
-                        <Image 
-                            style={{
-                                borderRadius: 8
-                            }}
-                            resizeMode='cover'
-                            source={require("../assets/success.png")}
-                        />
-                    </View>
+        <SafeAreaView style={{flex: 1}} forceInset={{top: 'alaways'}}>
+            <View style={styles.container}>
+                <View style={styles.top}>
+                <Text style={{color: "#AE8447", fontFamily: 'Poppins_500Medium', fontSize: 30, textAlign: "center", marginBottom: 40}}>Thank you for your order</Text>
+                    <Image
+                        resizeMode="cover" 
+                        source={require("../assets/success.png")}
+                    />
+                    <Text style={{color: "#575757", fontFamily: 'Poppins_500Medium', fontSize: 15, textAlign: "center", marginTop: 40}}>Estimate delivery</Text>
+                    <Text style={{color: "#575757", fontFamily: 'Poppins_500Medium', fontSize: 15, textAlign: "center"}}>12/06/2023</Text>
+                    <Text style={{color: "#575757", fontFamily: 'Poppins_500Medium', fontSize: 15, textAlign: "center", marginTop: 40}}>We've emailed you a confirmation and we'll notify you when your order has shipped.</Text>
                 </View>
-            </ScrollView>   
+                <View style={styles.bottom}>
+                    <Button 
+                        buttonStyle={{width: 200, height: 43, borderRadius: 100, backgroundColor: "#AE8447"}}
+                        title={"Home"}
+                        onPress={() => navigation.push("Splash8")}
+                    />
+                </View>
+            </View>
         </SafeAreaView>
-  )
+    )
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    paddingTop: 10,
-    paddingHorizontal: 10
-  },
-  primaryButtonStyle: {
-    height: 55,
-    borderRadius: 8,
-    backgroundColor: "#AE8447",
-    marginTop: 28,
-    marginBottom: 10
-  },
-  secondaryButtonStyle: {
-    height: 55,
-    borderRadius: 8,
-    backgroundColor: "#263238",
-    marginBottom: 35
-  },  
-  input: {
-    height: 45,
-    marginVertical: 10,
-    borderWidth: 1,
-    padding: 10,
-    borderRadius: 8,
-    borderWidth: 0.5,
-    borderColor: "grey",
-    fontSize: 18
-  },  
+    container: {
+        flex: 1,
+        backgroundColor: "#fff",
+        paddingHorizontal: 14
+    },
+    top: {
+        flex: 0.9,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    bottom: {
+        flex: 0.1,
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+    }
 })
 
 export default ProductBuySuccess
